@@ -46,17 +46,6 @@ This project is centered around two folders:
 4. Shift weights by 1 period (no lookahead).
 5. Subtract simple transaction costs from turnover:
 
-## How to run
-
-From project root:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python regression_analysis/run_regression_analysis.py
-python model_development/run_strategy_development.py
-```
 
 ## Main outputs
 
@@ -68,7 +57,6 @@ Regression:
 - `outputs/predictions_all_models.csv`
 
 Strategy:
-
 - `outputs/strategy_weights.csv`
 - `outputs/strategy_backtest.csv`
 - `outputs/strategy_performance_summary.csv`
