@@ -61,3 +61,8 @@ Strategy:
 - `outputs/strategy_backtest.csv`
 - `outputs/strategy_performance_summary.csv`
 - `outputs/strategy_summary.txt`
+
+
+Performance (3/27/2026)
+ ann_return  ann_vol  sharpe  max_drawdown  hit_rate  n_periods
+     0.4009   0.2482  1.4416       -0.5727    0.7288        177
