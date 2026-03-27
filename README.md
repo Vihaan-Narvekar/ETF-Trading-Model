@@ -64,9 +64,9 @@ Strategy:
 
 
 Performance (3/27/2026)
- ann_return: 0.4009
- ann_vol: 0.2482 
- sharpe: 1.4416 
- max_drawdown: -0.5727
- hit_rate: 0.7288 
- n_periods: 177
+ ann_return: 0.4009. 
+ ann_vol: 0.2482. 
+ sharpe: 1.4416. 
+ max_drawdown: -0.5727. 
+ hit_rate: 0.7288. 
+ n_periods: 177. 
