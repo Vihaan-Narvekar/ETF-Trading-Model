@@ -65,9 +65,7 @@ def main() -> None:
     realized = realized.loc[idx]
 
     # Strategy: Direction from sign(prediction), Normalize to gross exposure = 1
-    # Use magnitude instead of just sign
-    raw_signal = pred.copy()
-    # Normalize to get weights
+    raw_signal = np.sign(pred)
     gross_exposure = raw_signal.abs().sum(axis=1).replace(0, np.nan)
     weights = raw_signal.div(gross_exposure, axis=0).fillna(0.0)
 
