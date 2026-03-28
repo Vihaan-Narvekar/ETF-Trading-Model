@@ -7,11 +7,13 @@ This project is centered around two folders:
 
 - `regression_analysis/`: data collection, feature engineering, regression modeling
 - `model_development/`: strategy rules and backtest
+- `visualization/`: chart generation from saved outputs
 
 ## Project structure
 
 - `regression_analysis/run_regression_analysis.py`
 - `model_development/run_strategy_development.py`
+- `visualization/create_visualizations.py`
 - `outputs/`
 - `requirements.txt`
 
@@ -28,6 +30,7 @@ This project is centered around two folders:
 - `elasticnet`
 - `huber`
 - `quantile`
+- Model selection metric: highest `dir_acc` (directional accuracy), tie-breaker = lower `rmse`
 
 ## Target and features
 
@@ -54,6 +57,8 @@ Regression:
 - `outputs/regression_dataset.csv`
 - `outputs/mlr_results.csv`
 - `outputs/best_models.csv`
+- `outputs/feature_importance.csv`
+- `outputs/feature_importance_best_models.csv`
 - `outputs/predictions_all_models.csv`
 
 Strategy:
@@ -61,6 +66,21 @@ Strategy:
 - `outputs/strategy_backtest.csv`
 - `outputs/strategy_performance_summary.csv`
 - `outputs/strategy_summary.txt`
+
+Visualizations:
+- `outputs/charts/model_directional_accuracy.png`
+- `outputs/charts/best_model_realized_vs_predicted.png`
+- `outputs/charts/model_quintile_return_spread.png`
+- `outputs/charts/strategy_equity_drawdown_vs_benchmark.png`
+- `outputs/charts/strategy_return_histograms_gross_vs_net.png`
+
+## Run order
+
+```bash
+python regression_analysis/run_regression_analysis.py
+python model_development/run_strategy_development.py
+python visualization/create_visualizations.py
+```
 
 
 Performance (3/27/2026)

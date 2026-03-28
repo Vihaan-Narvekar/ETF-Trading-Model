@@ -37,6 +37,7 @@ def strategy_stats(net_returns: pd.Series, annualization: int = 12) -> dict[str,
 
 
 def main() -> None:
+    OUTPUT_DIR.mkdir(exist_ok=True)
     best_models = pd.read_csv(OUTPUT_DIR / "best_models.csv")
     all_predictions = pd.read_csv(OUTPUT_DIR / "predictions_all_models.csv", index_col=0, parse_dates=True)
     regression_dataset = pd.read_csv(OUTPUT_DIR / "regression_dataset.csv", index_col=0, parse_dates=True)

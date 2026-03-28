@@ -1,5 +1,4 @@
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import yfinance as yf
@@ -101,6 +100,46 @@ def model_pipeline(model) -> Pipeline:
     )
 
 
+def build_feature_importance(
+    dataset: pd.DataFrame,
+    feature_cols: list[str],
+    target_cols: list[str],
+) -> pd.DataFrame:
+    rows = []
+
+    X_all = dataset[feature_cols]
+    for target in target_cols:
+        y_all = dataset[target]
+
+        for model_name, model in MODELS.items():
+            pipe = model_pipeline(model)
+            pipe.fit(X_all, y_all)
+
+            estimator = pipe.named_steps["model"]
+            if not hasattr(estimator, "coef_"):
+                continue
+
+            coefs = np.asarray(estimator.coef_).reshape(-1)
+            fi = pd.DataFrame(
+                {
+                    "target": target,
+                    "model": model_name,
+                    "feature": feature_cols,
+                    "coefficient": coefs,
+                    "abs_coefficient": np.abs(coefs),
+                }
+            ).sort_values("abs_coefficient", ascending=False)
+            fi["rank"] = np.arange(1, len(fi) + 1)
+            rows.append(fi)
+
+    if not rows:
+        return pd.DataFrame(
+            columns=["target", "model", "feature", "coefficient", "abs_coefficient", "rank"]
+        )
+
+    return pd.concat(rows, ignore_index=True)
+
+
 def main() -> None:
     OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -152,6 +191,8 @@ def main() -> None:
                 rmse = float(np.sqrt(mean_squared_error(Y_eval, Y_pred)))
                 dir_acc = float((np.sign(Y_eval) == np.sign(Y_pred)).mean())
                 n_oos = int(len(Y_eval))
+            else:
+                r2, rmse, dir_acc, n_oos = np.nan, np.nan, np.nan, 0
 
             results.append(
                 {
@@ -164,16 +205,45 @@ def main() -> None:
                 }
             )
 
-    results_df = pd.DataFrame(results).sort_values(["target", "r2"], ascending=[True, False])
+    results_df = pd.DataFrame(results).sort_values(
+        ["target", "dir_acc", "rmse"],
+        ascending=[True, False, True],
+    )
     results_df.to_csv(OUTPUT_DIR / "mlr_results.csv", index=False)
 
     best_models = results_df.groupby("target", as_index=False).first()
     best_models = best_models.rename(columns={"model": "best_model"})
+
+    feature_importance = build_feature_importance(dataset, feature_cols, target_cols)
+    feature_importance_best = feature_importance.merge(
+        best_models[["target", "best_model"]],
+        left_on=["target", "model"],
+        right_on=["target", "best_model"],
+        how="inner",
+    ).drop(columns=["best_model"])
+
+    top_feature = (
+        feature_importance_best.sort_values(["target", "rank"])
+        .groupby("target", as_index=False)
+        .first()[["target", "feature", "abs_coefficient"]]
+        .rename(
+            columns={
+                "feature": "top_feature",
+                "abs_coefficient": "top_feature_abs_coefficient",
+            }
+        )
+    )
+    best_models = best_models.merge(top_feature, on="target", how="left")
+
     best_models.to_csv(OUTPUT_DIR / "best_models.csv", index=False)
+    feature_importance.to_csv(OUTPUT_DIR / "feature_importance.csv", index=False)
+    feature_importance_best.to_csv(OUTPUT_DIR / "feature_importance_best_models.csv", index=False)
 
     all_predictions.to_csv(OUTPUT_DIR / "predictions_all_models.csv", index_label="date")
 
     print(results_df)
+    print("Saved: outputs/feature_importance.csv")
+    print("Saved: outputs/feature_importance_best_models.csv")
 
 
 if __name__ == "__main__":
