@@ -13,7 +13,6 @@ This project is centered around two folders:
 
 - `regression_analysis/run_regression_analysis.py`
 - `model_development/run_strategy_development.py`
-- `visualization/create_visualizations.py`
 - `outputs/`
 - `requirements.txt`
 
